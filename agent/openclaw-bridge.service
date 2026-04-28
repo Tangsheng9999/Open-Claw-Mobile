@@ -1,0 +1,18 @@
+[Unit]
+Description=Open Claw Bridge Agent
+After=network.target
+
+[Service]
+Type=simple
+# 修改为实际部署目录与运行用户
+WorkingDirectory=/opt/openclaw-bridge
+EnvironmentFile=/opt/openclaw-bridge/.env
+ExecStart=/usr/bin/node dist/index.js
+Restart=on-failure
+RestartSec=5
+User=ubuntu
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
