@@ -1,9 +1,8 @@
 "use client"
 
-import { useState } from "react"
-import { Card } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Spinner } from "@/components/ui/spinner"
+import * as React from "react"
+import { Loader2, type LucideIcon } from "lucide-react"
+import { toast } from "sonner"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,66 +13,69 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import { agentRequest } from "@/lib/agent-client"
+import { Button } from "@/components/ui/button"
 import { useConnection } from "@/components/connection-provider"
-import { toast } from "@/hooks/use-toast"
-import type { LucideIcon } from "lucide-react"
+import { cn } from "@/lib/utils"
+
+type ActionFn = () => Promise<{ ok: boolean; output?: string; message?: string }>
 
 interface ActionCardProps {
   icon: LucideIcon
   title: string
   description: string
-  endpoint: string
   buttonLabel: string
   destructive?: boolean
   confirmTitle: string
   confirmDescription: string
+  /** 该操作要执行的 agentApi 方法，由父组件注入 */
+  action: ActionFn
 }
 
 export function ActionCard({
   icon: Icon,
   title,
   description,
-  endpoint,
   buttonLabel,
   destructive,
   confirmTitle,
   confirmDescription,
+  action,
 }: ActionCardProps) {
-  const { connection } = useConnection()
-  const [open, setOpen] = useState(false)
-  const [pending, setPending] = useState(false)
-  const [output, setOutput] = useState<string | null>(null)
+  const { config } = useConnection()
+  const [open, setOpen] = React.useState(false)
+  const [pending, setPending] = React.useState(false)
+  const [output, setOutput] = React.useState<string | null>(null)
 
   async function run() {
-    if (!connection) {
-      toast({ title: "未连接 Agent", description: "请先到设置页配置连接", variant: "destructive" })
+    if (!config) {
+      toast.error("尚未连接 Agent", { description: "请先到设置页配置连接" })
       return
     }
     setPending(true)
     setOutput(null)
     try {
-      const res = await agentRequest<{ ok: boolean; message?: string; log?: string }>(connection, endpoint, {
-        method: "POST",
-      })
-      setOutput(res.log ?? res.message ?? "操作已发送")
-      toast({ title: "已下发指令", description: res.message ?? title })
+      const res = await action()
+      const text = res.output ?? res.message ?? "操作已下发"
+      setOutput(text)
+      if (res.ok) toast.success(title, { description: text.slice(0, 80) })
+      else toast.error(title + " 失败", { description: text.slice(0, 200) })
     } catch (e) {
       const msg = e instanceof Error ? e.message : "未知错误"
       setOutput(msg)
-      toast({ title: "执行失败", description: msg, variant: "destructive" })
+      toast.error("执行失败", { description: msg })
     } finally {
       setPending(false)
     }
   }
 
   return (
-    <Card className="p-4">
+    <div className="rounded-2xl border border-border bg-card p-4">
       <div className="flex items-start gap-3">
         <div
-          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${
-            destructive ? "bg-destructive/10 text-destructive" : "bg-primary/10 text-primary"
-          }`}
+          className={cn(
+            "flex h-10 w-10 shrink-0 items-center justify-center rounded-lg",
+            destructive ? "bg-destructive/10 text-destructive" : "bg-primary/10 text-primary",
+          )}
         >
           <Icon className="h-5 w-5" />
         </div>
@@ -89,7 +91,7 @@ export function ActionCard({
         onClick={() => setOpen(true)}
         disabled={pending}
       >
-        {pending ? <Spinner className="mr-2" /> : null}
+        {pending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
         {buttonLabel}
       </Button>
 
@@ -116,6 +118,6 @@ export function ActionCard({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </Card>
+    </div>
   )
 }

@@ -58,5 +58,3 @@ export function QuickMetrics() {
     </div>
   )
 }
-</content>
-<parameter name="taskNameActive">快速指标

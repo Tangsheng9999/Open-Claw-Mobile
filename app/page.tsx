@@ -23,5 +23,3 @@ export default function DashboardPage() {
     </AppShell>
   )
 }
-</content>
-<parameter name="taskNameActive">仪表盘主页

@@ -37,5 +37,3 @@ export function MetricTile({
     </div>
   )
 }
-</content>
-<parameter name="taskNameActive">指标卡

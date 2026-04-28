@@ -1,7 +1,16 @@
 "use client"
 
 import * as React from "react"
-import { CheckCircle2, ExternalLink, Loader2, Plug, ShieldCheck, Trash2 } from "lucide-react"
+import {
+  CheckCircle2,
+  ExternalLink,
+  Loader2,
+  Plug,
+  Plus,
+  Server as ServerIcon,
+  ShieldCheck,
+  Trash2,
+} from "lucide-react"
 import { toast } from "sonner"
 import { AppShell } from "@/components/app-shell"
 import { SectionHeader } from "@/components/section-header"
@@ -11,22 +20,19 @@ import { normalizeAgentUrl } from "@/lib/connection"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
+import { PushCard } from "@/components/system/push-card"
+import { cn } from "@/lib/utils"
 
 export default function SettingsPage() {
-  const { config, setConfig, disconnect, hydrated } = useConnection()
-  const [agentUrl, setAgentUrl] = React.useState(config?.agentUrl ?? "")
-  const [token, setToken] = React.useState(config?.token ?? "")
-  const [label, setLabel] = React.useState(config?.label ?? "")
+  const { profiles, config, setConfig, removeProfile, activate, hydrated } = useConnection()
+  const activeId = config?.id ?? null
+  const [agentUrl, setAgentUrl] = React.useState("")
+  const [token, setToken] = React.useState("")
+  const [label, setLabel] = React.useState("")
   const [probing, setProbing] = React.useState(false)
 
-  React.useEffect(() => {
-    if (!hydrated) return
-    setAgentUrl(config?.agentUrl ?? "")
-    setToken(config?.token ?? "")
-    setLabel(config?.label ?? "")
-  }, [config, hydrated])
-
-  async function onProbeAndSave() {
+  async function onProbeAndAdd() {
     if (!agentUrl || !token) {
       toast.error("请填写 Agent 地址和 Token")
       return
@@ -36,7 +42,10 @@ export default function SettingsPage() {
     try {
       await agentApi.probe(url, token)
       setConfig({ agentUrl: url, token, label: label || undefined })
-      toast.success("连接成功，已保存")
+      toast.success("连接成功，已加入 Agent 列表")
+      setAgentUrl("")
+      setToken("")
+      setLabel("")
     } catch (err) {
       toast.error("无法连接到 Agent", {
         description: err instanceof Error ? err.message : String(err),
@@ -44,14 +53,6 @@ export default function SettingsPage() {
     } finally {
       setProbing(false)
     }
-  }
-
-  function onDisconnect() {
-    disconnect()
-    setAgentUrl("")
-    setToken("")
-    setLabel("")
-    toast.message("已断开连接")
   }
 
   return (
@@ -65,14 +66,14 @@ export default function SettingsPage() {
             <div>
               <h1 className="text-lg font-semibold tracking-tight">Bridge Agent 连接</h1>
               <p className="text-[12px] leading-relaxed text-muted-foreground">
-                监控台只是前端 — 数据来自跑在你 VPS / macOS 上的 Bridge Agent。安装方法见
+                可同时配置多台 VPS / Mac，顶部下拉切换。所有数据保留在本地浏览器。
                 <a
-                  href="https://github.com/your-org/open-claw-monitor#bridge-agent-installation"
+                  href="https://github.com/Tangsheng9999/Open-Claw-Mobile#bridge-agent-installation"
                   target="_blank"
                   rel="noreferrer"
                   className="ml-1 inline-flex items-center gap-0.5 text-primary underline-offset-2 hover:underline"
                 >
-                  README
+                  安装文档
                   <ExternalLink className="h-3 w-3" />
                 </a>
               </p>
@@ -80,14 +81,95 @@ export default function SettingsPage() {
           </div>
         </section>
 
+        {/* 已添加的 Agent 列表 */}
+        {hydrated && profiles.length > 0 ? (
+          <section className="flex flex-col gap-2">
+            <SectionHeader title="已配置的 Agent" hint={`${profiles.length} 台 · ${config?.label ?? config?.agentUrl ?? "—"} 当前激活`} />
+            <ul className="flex flex-col gap-2">
+              {profiles.map((p) => {
+                const isActive = p.id === activeId
+                return (
+                  <li
+                    key={p.id}
+                    className={cn(
+                      "rounded-xl border p-3.5 transition-colors",
+                      isActive
+                        ? "border-primary/50 bg-primary/5"
+                        : "border-border bg-card",
+                    )}
+                  >
+                    <div className="flex items-start gap-3">
+                      <span
+                        className={cn(
+                          "mt-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md ring-1",
+                          isActive
+                            ? "bg-primary/15 text-primary ring-primary/30"
+                            : "bg-muted text-muted-foreground ring-border",
+                        )}
+                      >
+                        <ServerIcon className="h-4.5 w-4.5" />
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="truncate text-[14px] font-medium">
+                            {p.label || p.agentUrl}
+                          </span>
+                          {isActive ? (
+                            <span className="rounded-full bg-success/15 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-success">
+                              激活
+                            </span>
+                          ) : null}
+                        </div>
+                        <p className="mt-0.5 break-all font-mono text-[11px] text-muted-foreground">
+                          {p.agentUrl}
+                        </p>
+                        <div className="mt-2 flex items-center gap-2">
+                          {!isActive ? (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="h-7 text-[11px]"
+                              onClick={() => {
+                                activate(p.id)
+                                toast.message(`已切换到 ${p.label || p.agentUrl}`)
+                              }}
+                            >
+                              <ShieldCheck className="mr-1 h-3 w-3" />
+                              切换为当前
+                            </Button>
+                          ) : null}
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="h-7 text-[11px] text-destructive hover:text-destructive"
+                            onClick={() => {
+                              removeProfile(p.id)
+                              toast.message("已移除")
+                            }}
+                          >
+                            <Trash2 className="mr-1 h-3 w-3" />
+                            移除
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                )
+              })}
+            </ul>
+          </section>
+        ) : null}
+
+        {/* 添加新 Agent */}
         <section className="flex flex-col gap-2">
-          <SectionHeader title="连接配置" hint="保存在设备本地 · 不会上传到任何地方" />
+          <SectionHeader
+            title={profiles.length === 0 ? "添加 Agent" : "添加另一台 Agent"}
+            hint="本地保存 · 不上传"
+          />
           <div className="rounded-xl border border-border bg-card p-4">
-            <div className="flex flex-col gap-3.5">
-              <div className="flex flex-col gap-1.5">
-                <Label htmlFor="agentUrl" className="text-[12px] text-muted-foreground">
-                  Agent 地址
-                </Label>
+            <FieldGroup>
+              <Field>
+                <FieldLabel htmlFor="agentUrl">Agent 地址</FieldLabel>
                 <Input
                   id="agentUrl"
                   placeholder="https://claw.example.com  或  http://192.168.1.10:7878"
@@ -98,11 +180,9 @@ export default function SettingsPage() {
                   inputMode="url"
                   className="font-mono text-[13px]"
                 />
-              </div>
-              <div className="flex flex-col gap-1.5">
-                <Label htmlFor="token" className="text-[12px] text-muted-foreground">
-                  访问 Token
-                </Label>
+              </Field>
+              <Field>
+                <FieldLabel htmlFor="token">访问 Token</FieldLabel>
                 <Input
                   id="token"
                   placeholder="启动 Agent 时打印在终端"
@@ -113,8 +193,8 @@ export default function SettingsPage() {
                   type="password"
                   className="font-mono text-[13px]"
                 />
-              </div>
-              <div className="flex flex-col gap-1.5">
+              </Field>
+              <Field>
                 <Label htmlFor="label" className="text-[12px] text-muted-foreground">
                   备注（可选）
                 </Label>
@@ -125,30 +205,33 @@ export default function SettingsPage() {
                   onChange={(e) => setLabel(e.target.value)}
                   className="text-[13px]"
                 />
-              </div>
-              <div className="flex items-center gap-2 pt-1">
-                <Button onClick={onProbeAndSave} disabled={probing} className="flex-1">
-                  {probing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ShieldCheck className="mr-2 h-4 w-4" />}
-                  {probing ? "正在验证…" : config ? "更新连接" : "测试并保存"}
-                </Button>
-                {config ? (
-                  <Button variant="outline" onClick={onDisconnect}>
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    断开
-                  </Button>
-                ) : null}
-              </div>
-            </div>
+              </Field>
+              <Button onClick={onProbeAndAdd} disabled={probing} className="w-full">
+                {probing ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <Plus className="mr-2 h-4 w-4" />
+                )}
+                {probing ? "正在验证…" : "测试并添加"}
+              </Button>
+            </FieldGroup>
           </div>
         </section>
+
+        {/* 推送通知 */}
+        {config ? <PushCard /> : null}
 
         {config ? (
           <section className="rounded-xl border border-success/40 bg-success/5 p-4">
             <div className="flex items-start gap-3">
               <CheckCircle2 className="mt-0.5 h-5 w-5 text-success" />
               <div className="text-[12px]">
-                <p className="font-medium text-foreground">已连接到 {config.label || config.agentUrl}</p>
-                <p className="mt-1 break-all font-mono text-[11px] text-muted-foreground">{config.agentUrl}</p>
+                <p className="font-medium text-foreground">
+                  当前已连接到 {config.label || config.agentUrl}
+                </p>
+                <p className="mt-1 break-all font-mono text-[11px] text-muted-foreground">
+                  {config.agentUrl}
+                </p>
               </div>
             </div>
           </section>
@@ -159,10 +242,19 @@ export default function SettingsPage() {
           <div className="rounded-xl border border-border bg-card p-4 text-[12px] leading-relaxed text-muted-foreground">
             <p>
               Open Claw Monitor 是一个开源的 PWA + Node.js Bridge，用来在手机上监控运行在你自己机器上的{" "}
-              <span className="font-medium text-foreground">OpenClaw</span> 实例。所有数据保留在你自己的设备上。
+              <span className="font-medium text-foreground">OpenClaw</span> 实例。
             </p>
             <p className="mt-2">
-              支持 安卓 / iOS / 鸿蒙 — 浏览器打开后选择「添加到主屏幕」即可像原生 App 一样使用。
+              支持 安卓 / iOS / 鸿蒙 — 浏览器打开后选择「添加到主屏幕」即可像原生 App 一样使用，或参考{" "}
+              <a
+                href="https://github.com/Tangsheng9999/Open-Claw-Mobile/tree/main/native"
+                target="_blank"
+                rel="noreferrer"
+                className="text-primary underline-offset-2 hover:underline"
+              >
+                native/
+              </a>{" "}
+              目录打包成原生 App。
             </p>
           </div>
         </section>
@@ -170,5 +262,3 @@ export default function SettingsPage() {
     </AppShell>
   )
 }
-</content>
-<parameter name="taskNameActive">设置页

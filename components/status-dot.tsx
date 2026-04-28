@@ -26,5 +26,3 @@ export function StatusDot({
     </span>
   )
 }
-</content>
-<parameter name="taskNameActive">状态点

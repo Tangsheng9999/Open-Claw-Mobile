@@ -66,5 +66,3 @@ export default function ModelsPage() {
     </AppShell>
   )
 }
-</content>
-<parameter name="taskNameActive">模型管理页

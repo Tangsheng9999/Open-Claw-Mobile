@@ -30,5 +30,3 @@ export function SectionHeader({
     )
   return <div className={cn("flex items-center justify-between py-1", className)}>{inner}</div>
 }
-</content>
-<parameter name="taskNameActive">区块标题

@@ -45,5 +45,3 @@ export function StatusHero() {
     </section>
   )
 }
-</content>
-<parameter name="taskNameActive">状态头部

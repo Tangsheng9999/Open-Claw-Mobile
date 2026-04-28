@@ -53,9 +53,9 @@ export const mockStatus: ClawStatus = {
 export const mockConversations: Conversation[] = [
   {
     id: "c1",
-    title: "Telegram · Brosef",
-    channel: "telegram",
-    participant: "@you",
+    title: "openclaw run · refactor auth",
+    channel: "cli",
+    participant: "shell",
     lastMessageAt: new Date(Date.now() - 1000 * 60 * 2).toISOString(),
     lastMessagePreview: "已经把测试跑完了，3 个 case 通过，1 个需要你确认。",
     status: "active",
@@ -64,9 +64,9 @@ export const mockConversations: Conversation[] = [
   },
   {
     id: "c2",
-    title: "WhatsApp · Family",
-    channel: "whatsapp",
-    participant: "+86 138****",
+    title: "API · /v1/chat/completions",
+    channel: "api",
+    participant: "127.0.0.1",
     lastMessageAt: new Date(Date.now() - 1000 * 60 * 11).toISOString(),
     lastMessagePreview: "晚上 7 点的航班已经帮你 check-in，登机口 B12。",
     status: "idle",
@@ -75,14 +75,25 @@ export const mockConversations: Conversation[] = [
   },
   {
     id: "c3",
-    title: "iMessage · Work",
-    channel: "imessage",
-    participant: "Tony",
+    title: "MCP · Cursor IDE",
+    channel: "mcp",
+    participant: "cursor",
     lastMessageAt: new Date(Date.now() - 1000 * 60 * 38).toISOString(),
     lastMessagePreview: "在等你确认是否要把 PR 合并到 main。",
     status: "waiting",
     model: "anthropic/claude-opus-4.6",
     tokenUsage: 5640,
+  },
+  {
+    id: "c4",
+    title: "Web · /chat/abc123",
+    channel: "web",
+    participant: "browser",
+    lastMessageAt: new Date(Date.now() - 1000 * 60 * 70).toISOString(),
+    lastMessagePreview: "好的，我来给你写一个完整的设计稿…",
+    status: "idle",
+    model: "google/gemini-3-flash",
+    tokenUsage: 928,
   },
 ]
 
@@ -259,5 +270,3 @@ export const mockDiagnostics: DiagnosticItem[] = [
     fixHint: "在系统页执行『升级 OpenClaw』",
   },
 ]
-</content>
-<parameter name="taskNameActive">写入示例数据

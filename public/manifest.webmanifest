@@ -2,11 +2,16 @@
   "name": "Open Claw 监控台",
   "short_name": "Claw Monitor",
   "description": "在手机上监控运行在 VPS / macOS 上的 OpenClaw 实例",
+  "id": "/",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone"],
   "orientation": "portrait",
   "background_color": "#1a1410",
   "theme_color": "#1a1410",
+  "lang": "zh-CN",
+  "dir": "ltr",
   "categories": ["productivity", "developer", "utilities"],
   "icons": [
     {
@@ -19,9 +24,36 @@
       "src": "/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "对话",
+      "url": "/conversations",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "模型",
+      "url": "/models",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "系统",
+      "url": "/system",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
     }
   ]
 }
-</content>
-<parameter name="taskNameActive">写 PWA 清单

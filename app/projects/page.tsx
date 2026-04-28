@@ -90,5 +90,3 @@ function ProjectList({ items }: { items: Project[] }) {
     </ul>
   )
 }
-</content>
-<parameter name="taskNameActive">项目页

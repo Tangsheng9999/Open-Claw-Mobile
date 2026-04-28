@@ -29,15 +29,26 @@ fi
 
 echo "==> 准备 .env"
 if [ ! -f .env ]; then
-  cp .env.example .env
-  TOKEN=$(node -e "console.log(require('crypto').randomBytes(32).toString('hex'))")
-  if [ "$(uname)" = "Darwin" ]; then
-    sed -i "" "s/please-change-me/$TOKEN/" .env
+  if [ ! -f .env.example ]; then
+    echo "警告：未找到 .env.example，跳过自动生成 .env"
   else
-    sed -i "s/please-change-me/$TOKEN/" .env
+    cp .env.example .env
+    TOKEN=$(node -e "console.log(require('crypto').randomBytes(32).toString('hex'))")
+    if [ "$(uname)" = "Darwin" ]; then
+      sed -i "" "s/please-change-me/$TOKEN/" .env
+    else
+      sed -i "s/please-change-me/$TOKEN/" .env
+    fi
+    echo "已生成随机 BRIDGE_TOKEN，请妥善保存："
+    echo "  $TOKEN"
   fi
-  echo "已生成随机 BRIDGE_TOKEN，请妥善保存："
-  echo "  $TOKEN"
+fi
+
+echo "==> 生成 VAPID 推送密钥（首次运行）"
+if grep -q "^VAPID_PUBLIC_KEY=$" .env 2>/dev/null || ! grep -q "^VAPID_PUBLIC_KEY=" .env 2>/dev/null; then
+  if [ -f scripts/generate-vapid.mjs ]; then
+    node scripts/generate-vapid.mjs || echo "VAPID 生成失败（可稍后再运行 npm run vapid）"
+  fi
 fi
 
 echo "==> 编译 TypeScript"

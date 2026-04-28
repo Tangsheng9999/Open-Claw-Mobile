@@ -1,0 +1,51 @@
+{
+  "packageId": "app.openclaw.monitor.twa",
+  "host": "your-domain.com",
+  "name": "Claw Monitor",
+  "launcherName": "Claw Monitor",
+  "display": "standalone",
+  "orientation": "portrait",
+  "themeColor": "#1a1410",
+  "navigationColor": "#1a1410",
+  "navigationColorDark": "#1a1410",
+  "navigationDividerColor": "#2a221c",
+  "navigationDividerColorDark": "#2a221c",
+  "backgroundColor": "#1a1410",
+  "enableNotifications": true,
+  "startUrl": "/",
+  "iconUrl": "https://your-domain.com/icon-512.png",
+  "maskableIconUrl": "https://your-domain.com/icon-maskable-512.png",
+  "appVersionName": "0.1.0",
+  "appVersion": "1",
+  "shortcuts": [
+    {
+      "name": "仪表盘",
+      "shortName": "仪表盘",
+      "url": "/",
+      "iconUrl": "https://your-domain.com/icon-192.png"
+    },
+    {
+      "name": "诊断",
+      "shortName": "诊断",
+      "url": "/system",
+      "iconUrl": "https://your-domain.com/icon-192.png"
+    }
+  ],
+  "signingKey": {
+    "path": "./android.keystore",
+    "alias": "android"
+  },
+  "fingerprints": [],
+  "additionalTrustedOrigins": [],
+  "retainedBundles": [],
+  "fallbackType": "customtabs",
+  "features": {
+    "playBilling": { "enabled": false }
+  },
+  "alphaDependencies": { "enabled": false },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "fullScopeUrl": "https://your-domain.com/",
+  "minSdkVersion": 21
+}

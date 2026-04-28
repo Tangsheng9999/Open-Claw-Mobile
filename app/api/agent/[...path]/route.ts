@@ -32,7 +32,10 @@ async function forward(req: NextRequest, ctx: { params: Promise<{ path: string[]
     return Response.json({ error: "agent_not_configured" }, { status: 400 })
   }
   const { path } = await ctx.params
-  const subPath = "/" + (path?.join("/") ?? "")
+  const joined = path?.join("/") ?? ""
+  // Agent 的鉴权中间件挂载在 /api/* 下，所以这里统一加前缀。
+  // 客户端调用 /api/agent/info  →  上游 <agentUrl>/api/info。
+  const subPath = "/api/" + joined
   const search = req.nextUrl.search
     ? "?" +
       Array.from(req.nextUrl.searchParams.entries())
@@ -79,5 +82,3 @@ export const POST = forward
 export const PUT = forward
 export const DELETE = forward
 export const PATCH = forward
-</content>
-<parameter name="taskNameActive">编写代理路由

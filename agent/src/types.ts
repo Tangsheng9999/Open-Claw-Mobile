@@ -1,70 +1,132 @@
-// 与 PWA 端共享的接口契约（保持字段同步）
-export interface Heartbeat {
-  ts: string
-  cpu: number
-  memory: number
-  loadAvg: number[]
-  activeRequests: number
-  queuedRequests: number
+// 与 PWA 端 lib/types.ts 保持完全一致 — 这是唯一的接口契约。
+// 当 PWA 调用 /api/agent/<path> 时，本 Agent 必须按这里的字段名返回。
+
+export type ConnectionStatus = "connected" | "connecting" | "disconnected" | "error" | "unconfigured"
+export type AgentHealth = "healthy" | "degraded" | "down"
+
+export interface AgentInfo {
+  hostname: string
+  platform: "darwin" | "linux" | string
+  arch: string
+  uptimeSec: number
+  bridgeVersion: string
+  openclawVersion: string | null
+  openclawInstalled: boolean
 }
 
-export interface SystemStatus {
-  hostname: string
-  platform: string
-  uptimeSec: number
-  openclawVersion: string
-  defaultModel: string
-  gatewayHealthy: boolean
-  activeSessions: number
-  totalRequestsToday: number
-  tokensUsedToday: number
-  lastError: string | null
-  bridgeVersion: string
+export interface SystemMetrics {
+  cpuPercent: number
+  memUsedMb: number
+  memTotalMb: number
+  diskUsedGb: number
+  diskTotalGb: number
+  loadAvg: [number, number, number]
+}
+
+export interface GatewayStatus {
+  running: boolean
+  port: number
+  url: string
+  requestsPerMin: number
+  errorsPerMin: number
+}
+
+export interface ClawStatus {
+  running: boolean
+  pid: number | null
+  startedAt: string | null
+  health: AgentHealth
+  activeConversations: number
+  activeProjects: number
+  pendingHeartbeats: number
+  currentModel: string | null
+  gateway: GatewayStatus
 }
 
 export interface Conversation {
   id: string
   title: string
-  channel: "cli" | "api" | "web" | "mcp"
-  model: string
-  startedAt: string
+  channel: "telegram" | "whatsapp" | "imessage" | "discord" | "cli" | "api" | "web" | "mcp" | string
+  participant: string
   lastMessageAt: string
-  messageCount: number
-  tokensUsed: number
-  status: "running" | "idle" | "error"
+  lastMessagePreview: string
+  status: "active" | "idle" | "waiting"
+  model: string
+  tokenUsage: number
 }
 
 export interface Project {
   id: string
   name: string
-  path: string
-  activeAgents: number
+  description: string
+  status: "running" | "queued" | "paused" | "done" | "failed"
+  progress: number
+  startedAt: string
   lastActivityAt: string
-  status: "active" | "paused" | "error"
+  tasksDone: number
+  tasksTotal: number
+}
+
+export interface Heartbeat {
+  id: string
+  timestamp: string
+  source: string
+  message: string
+  level: "info" | "warn" | "error"
 }
 
 export interface ModelInfo {
   id: string
   name: string
   provider: string
-  type: "local" | "remote"
-  status: "ready" | "pulling" | "error" | "missing"
-  sizeBytes?: number
-  contextLength?: number
+  family: string
+  contextWindow: number
+  status: "ready" | "downloading" | "error" | "not_pulled"
+  sizeMb?: number
   isDefault: boolean
+  isLocal: boolean
+  lastUsedAt?: string
   pullProgress?: number
 }
 
-export interface DiagnosticCheck {
-  id: string
-  name: string
-  status: "pass" | "warn" | "fail"
-  detail: string
-  latencyMs?: number
+export interface ModelTestResult {
+  modelId: string
+  ok: boolean
+  latencyMs: number
+  tokensPerSec?: number
+  sample?: string
+  error?: string
 }
 
-export type WSMessage =
+export interface DiagnosticItem {
+  id: string
+  label: string
+  status: "pass" | "warn" | "fail" | "running"
+  detail: string
+  fixHint?: string
+}
+
+export interface LogLine {
+  ts: string
+  level: "info" | "warn" | "error" | "debug"
+  source: string
+  message: string
+}
+
+// WebSocket events pushed agent → client
+export type WsEvent =
+  | { type: "metrics"; data: SystemMetrics }
+  | { type: "status"; data: ClawStatus }
   | { type: "heartbeat"; data: Heartbeat }
-  | { type: "status"; data: SystemStatus }
-  | { type: "conversation:update"; data: Conversation }
-  | { type: "log"; data: { ts: string; level: string; message: string } }
+  | { type: "log"; data: LogLine }
+  | { type: "model.pull.progress"; data: { id: string; progress: number } }
+  | { type: "conversation.update"; data: Conversation }
+  | { type: "project.update"; data: Project }
+  | { type: "hello"; data: { bridgeVersion: string; serverTime: string } }
+
+export interface PushSubscription {
+  endpoint: string
+  keys: { p256dh: string; auth: string }
+  ua?: string
+  createdAt: string
+}

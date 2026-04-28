@@ -46,7 +46,7 @@ export interface GatewayStatus {
 export interface Conversation {
   id: string
   title: string
-  channel: "telegram" | "whatsapp" | "imessage" | "discord" | "cli" | "web" | string
+  channel: "telegram" | "whatsapp" | "imessage" | "discord" | "cli" | "api" | "web" | "mcp" | string
   participant: string
   lastMessageAt: string
   lastMessagePreview: string
@@ -122,5 +122,11 @@ export type WsEvent =
   | { type: "model.pull.progress"; data: { id: string; progress: number } }
   | { type: "conversation.update"; data: Conversation }
   | { type: "project.update"; data: Project }
-</content>
-<parameter name="taskNameActive">定义共享类型
+  | { type: "hello"; data: { bridgeVersion: string; serverTime: string } }
+
+export interface PushSubscriptionInfo {
+  endpoint: string
+  keys: { p256dh: string; auth: string }
+  ua?: string
+  createdAt: string
+}

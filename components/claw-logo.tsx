@@ -25,5 +25,3 @@ export function ClawLogo({ className }: { className?: string }) {
     </span>
   )
 }
-</content>
-<parameter name="taskNameActive">Logo 组件
