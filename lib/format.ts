@@ -31,5 +31,3 @@ export function formatBytes(mb: number): string {
 export function clamp(n: number, min = 0, max = 100): number {
   return Math.max(min, Math.min(max, n))
 }
-</content>
-<parameter name="taskNameActive">格式化工具

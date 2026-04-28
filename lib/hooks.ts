@@ -33,5 +33,3 @@ export function useModels() {
 export function useDiagnostics() {
   return useSWR("agent.diagnostics", () => agentApi.diagnostics(), slow)
 }
-</content>
-<parameter name="taskNameActive">SWR Hooks

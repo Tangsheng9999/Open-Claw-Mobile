@@ -95,5 +95,3 @@ function ConvoList({ items }: { items: ReturnType<typeof useConversations>["data
     </ul>
   )
 }
-</content>
-<parameter name="taskNameActive">对话页

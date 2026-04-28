@@ -148,5 +148,3 @@ export function AddModelDialog() {
     </Dialog>
   )
 }
-</content>
-<parameter name="taskNameActive">添加模型对话框

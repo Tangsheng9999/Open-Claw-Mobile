@@ -107,10 +107,37 @@ export const agentApi = {
     callAgent<{ ok: true }>(`/models/${encodeURIComponent(id)}`, { method: "DELETE" }),
 
   // System control
-  restartGateway: () => callAgent<{ ok: true }>(`/system/restart-gateway`, { method: "POST" }),
-  restartClaw: () => callAgent<{ ok: true }>(`/system/restart-claw`, { method: "POST" }),
-  upgradeClaw: () => callAgent<{ ok: true; output: string }>(`/system/upgrade`, { method: "POST" }),
+  restartGateway: () =>
+    callAgent<{ ok: boolean; output: string }>(`/system/restart-gateway`, { method: "POST" }),
+  restartClaw: () =>
+    callAgent<{ ok: boolean; output: string }>(`/system/restart-claw`, { method: "POST" }),
+  upgradeClaw: () =>
+    callAgent<{ ok: boolean; output: string }>(`/system/upgrade`, { method: "POST" }),
+  stopClaw: () => callAgent<{ ok: boolean; output: string }>(`/system/stop`, { method: "POST" }),
+  clearCache: () =>
+    callAgent<{ ok: boolean; output: string }>(`/system/clear-cache`, { method: "POST" }),
   diagnostics: () => withFallback(callAgent<DiagnosticItem[]>(`/diagnostics`), mockDiagnostics),
+
+  // Web Push 订阅管理
+  push: {
+    vapid: () =>
+      callAgent<{ configured: boolean; publicKey: string | null }>(`/push/vapid`),
+    subscribe: (sub: {
+      endpoint: string
+      keys: { p256dh: string; auth: string }
+      ua?: string
+    }) =>
+      callAgent<{ ok: true; total: number }>(`/push/subscribe`, {
+        method: "POST",
+        body: JSON.stringify({ ...sub, createdAt: new Date().toISOString() }),
+      }),
+    unsubscribe: (endpoint: string) =>
+      callAgent<{ ok: true; total: number }>(`/push/unsubscribe`, {
+        method: "POST",
+        body: JSON.stringify({ endpoint }),
+      }),
+    test: () => callAgent<{ sent: number; failed: number }>(`/push/test`, { method: "POST" }),
+  },
 
   // Connection probe (against /api/agent/ping with custom config — used by settings)
   probe: async (agentUrl: string, token: string) => {
@@ -131,5 +158,3 @@ export const agentApi = {
 }
 
 export { AgentNotConfiguredError }
-</content>
-<parameter name="taskNameActive">编写 Agent 客户端

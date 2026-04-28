@@ -30,5 +30,3 @@ export function ConnectCta() {
     </div>
   )
 }
-</content>
-<parameter name="taskNameActive">连接 CTA

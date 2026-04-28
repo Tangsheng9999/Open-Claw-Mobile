@@ -43,5 +43,3 @@ export function RecentHeartbeats() {
     </div>
   )
 }
-</content>
-<parameter name="taskNameActive">心跳列表

@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="zh">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Claw Monitor</title>
+  </head>
+  <body style="margin:0;background:#1a1410;color:#f5f1ec;font-family:system-ui">
+    <main style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;padding:24px;text-align:center">
+      <h1 style="font-size:18px;font-weight:600;margin:0 0 8px">Claw Monitor</h1>
+      <p style="font-size:13px;opacity:.7;line-height:1.6">
+        正在加载在线版本…<br />
+        如果长时间无响应，请检查 capacitor.config.ts 里的 server.url
+      </p>
+    </main>
+    <script>
+      // 兜底：如果 capacitor.config.ts 没改，依然给个跳转
+      setTimeout(function () {
+        if (location.protocol.startsWith("http")) return
+      }, 500)
+    </script>
+  </body>
+</html>

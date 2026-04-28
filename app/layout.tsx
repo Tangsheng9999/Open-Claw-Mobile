@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { Toaster } from "@/components/ui/sonner"
 import { ConnectionProvider } from "@/components/connection-provider"
+import { ServiceWorkerRegister } from "@/components/service-worker-register"
 import "./globals.css"
 
 const geist = Geist({
@@ -29,8 +30,12 @@ export const metadata: Metadata = {
     telephone: false,
   },
   icons: {
-    icon: "/icon.svg",
-    apple: "/apple-icon.png",
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
   },
 }
 
@@ -52,11 +57,10 @@ export default function RootLayout({
     <html lang="zh" className={`dark ${geist.variable} ${geistMono.variable} bg-background`} suppressHydrationWarning>
       <body className="font-sans antialiased min-h-screen bg-background text-foreground">
         <ConnectionProvider>{children}</ConnectionProvider>
+        <ServiceWorkerRegister />
         <Toaster theme="dark" position="top-center" />
         {process.env.NODE_ENV === "production" && <Analytics />}
       </body>
     </html>
   )
 }
-</content>
-<parameter name="taskNameActive">更新根布局

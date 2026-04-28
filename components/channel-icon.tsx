@@ -1,13 +1,15 @@
 import type { LucideIcon } from "lucide-react"
-import { Globe, MessageCircle, MessageSquare, Send, Slack, Terminal } from "lucide-react"
+import { Globe, MessageCircle, MessageSquare, Send, Slack, Terminal, Code2, Plug } from "lucide-react"
 
 const MAP: Record<string, LucideIcon> = {
+  cli: Terminal,
+  api: Code2,
+  web: Globe,
+  mcp: Plug,
   telegram: Send,
   whatsapp: MessageCircle,
   imessage: MessageSquare,
   discord: Slack,
-  cli: Terminal,
-  web: Globe,
 }
 
 export function channelIcon(channel: string): LucideIcon {
@@ -16,6 +18,14 @@ export function channelIcon(channel: string): LucideIcon {
 
 export function channelLabel(channel: string): string {
   switch (channel) {
+    case "cli":
+      return "命令行"
+    case "api":
+      return "API"
+    case "web":
+      return "Web"
+    case "mcp":
+      return "MCP"
     case "telegram":
       return "Telegram"
     case "whatsapp":
@@ -24,13 +34,7 @@ export function channelLabel(channel: string): string {
       return "iMessage"
     case "discord":
       return "Discord"
-    case "cli":
-      return "命令行"
-    case "web":
-      return "Web"
     default:
       return channel
   }
 }
-</content>
-<parameter name="taskNameActive">渠道图标

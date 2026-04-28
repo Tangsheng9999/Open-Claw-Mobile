@@ -173,5 +173,3 @@ export function ModelCard({ m }: { m: ModelInfo }) {
     </li>
   )
 }
-</content>
-<parameter name="taskNameActive">模型卡片
