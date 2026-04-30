@@ -27,19 +27,19 @@ export default function ProjectsPage() {
       <div className="flex flex-col gap-4">
         <ConnectCta />
         <header className="flex flex-col gap-1.5">
-          <h1 className="text-xl font-semibold tracking-tight">项目</h1>
+          <h1 className="text-xl font-semibold tracking-tight">工作区</h1>
           <p className="text-[12px] text-muted-foreground">
-            OpenClaw 当前在执行的所有任务 — {list.length} 个总计 · {running.length} 个运行中
+            OpenClaw 隔离工作区（agents）— {list.length} 个总计 · {running.length} 个有任务在跑
           </p>
         </header>
 
         <section className="flex flex-col gap-2">
-          <SectionHeader title="运行中" />
+          <SectionHeader title="活跃中" />
           <ProjectList items={running} />
         </section>
 
         <section className="flex flex-col gap-2">
-          <SectionHeader title="其他" />
+          <SectionHeader title="其他工作区" />
           <ProjectList items={others} />
         </section>
       </div>
@@ -51,7 +51,7 @@ function ProjectList({ items }: { items: Project[] }) {
   if (items.length === 0) {
     return (
       <div className="rounded-xl border border-dashed border-border bg-card/40 p-6 text-center text-[12px] text-muted-foreground">
-        没有匹配的项目
+        没有匹配的工作区
       </div>
     )
   }

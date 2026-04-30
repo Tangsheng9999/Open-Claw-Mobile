@@ -22,7 +22,7 @@ export function QuickMetrics() {
         tone="primary"
       />
       <MetricTile
-        label="活跃项目"
+        label="进行中任务"
         value={status?.activeProjects ?? 0}
         hint={status?.gateway.requestsPerMin ? `${status.gateway.requestsPerMin} req/min` : "网关空闲"}
         icon={<Box className="h-4 w-4" />}

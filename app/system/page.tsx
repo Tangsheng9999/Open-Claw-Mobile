@@ -39,7 +39,7 @@ export default function SystemPage() {
             <ActionCard
               icon={RotateCcw}
               title="重启 OpenClaw"
-              description="重启 OpenClaw 主进程；当前正在执行的项目会被中断。"
+              description="重启 OpenClaw 主进程；当前正在执行的任务会被中断。"
               buttonLabel="重启服务"
               confirmTitle="确认重启 OpenClaw？"
               confirmDescription="所有进行中的会话与心跳会被打断，systemd / launchd 会自动拉起。"

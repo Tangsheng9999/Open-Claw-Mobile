@@ -31,7 +31,7 @@ import {
 const NAV = [
   { href: "/", label: "概览", icon: Activity },
   { href: "/conversations", label: "对话", icon: MessageSquare },
-  { href: "/projects", label: "项目", icon: Box },
+  { href: "/projects", label: "工作区", icon: Box },
   { href: "/models", label: "模型", icon: Cpu },
   { href: "/system", label: "系统", icon: Stethoscope },
 ] as const
